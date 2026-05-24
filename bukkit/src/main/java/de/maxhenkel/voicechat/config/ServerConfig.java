@@ -20,6 +20,7 @@ public class ServerConfig {
     public final ConfigEntry<Boolean> allowRecording;
     public final ConfigEntry<Boolean> spectatorInteraction;
     public final ConfigEntry<Boolean> spectatorToSpectator;
+    public final ConfigEntry<Boolean> spectatorOverridesGroup;
     public ConfigEntry<Boolean> spectatorPlayerPossession;
     public ConfigEntry<Boolean> forceVoiceChat;
     public ConfigEntry<Integer> loginTimeout;
@@ -95,6 +96,10 @@ public class ServerConfig {
         spectatorToSpectator = builder
                 .booleanEntry("spectator_to_spectator", true,
                         "If spectators are allowed to talk to other spectators in proximity range. Set both this and 'spectator_interaction' to false to put spectators in listen-only mode."
+                );
+        spectatorOverridesGroup = builder
+                .booleanEntry("spectator_overrides_group", false,
+                        "If 'spectator_interaction' and 'spectator_to_spectator' should also be enforced inside group chat. When false (default), group members always hear each other regardless of spectator state."
                 );
         spectatorPlayerPossession = builder
                 .booleanEntry("spectator_player_possession", false,

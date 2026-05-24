@@ -334,6 +334,12 @@ public class Server extends Thread {
         if (groupId == null) {
             return;
         }
+        boolean applySpectatorOverride = sender.getGameMode().equals(GameMode.SPECTATOR) && Voicechat.SERVER_CONFIG.spectatorOverridesGroup.get();
+        boolean talkToNonSpectators = !applySpectatorOverride || Voicechat.SERVER_CONFIG.spectatorInteraction.get();
+        boolean talkToSpectators = !applySpectatorOverride || Voicechat.SERVER_CONFIG.spectatorToSpectator.get();
+        if (!talkToNonSpectators && !talkToSpectators) {
+            return;
+        }
         GroupSoundPacket groupSoundPacket = new GroupSoundPacket(senderState.getUuid(), senderState.getUuid(), packet.getData(), packet.getSequenceNumber(), null);
         for (PlayerState state : playerStateManager.getStates()) {
             if (!groupId.equals(state.getGroup())) {
@@ -344,6 +350,9 @@ public class Server extends Thread {
             }
             Player p = server.getPlayer(state.getUuid());
             if (p == null) {
+                continue;
+            }
+            if (p.getGameMode().equals(GameMode.SPECTATOR) ? !talkToSpectators : !talkToNonSpectators) {
                 continue;
             }
             @Nullable ClientConnection connection = getConnection(state.getUuid());
