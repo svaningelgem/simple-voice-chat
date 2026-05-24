@@ -92,8 +92,8 @@ public class ServerConfig {
                         "If players are allowed to record the voice chat audio"
                 );
         spectatorInteraction = builder
-                .booleanEntry("spectator_interaction", false,
-                        "If spectators are allowed to talk to other players"
+                .booleanEntry("spectator_interaction", true,
+                        "If spectators are allowed to talk to non-spectator players. Spectators can always talk to other spectators in proximity range regardless of this setting."
                 );
         spectatorPlayerPossession = builder
                 .booleanEntry("spectator_player_possession", false,

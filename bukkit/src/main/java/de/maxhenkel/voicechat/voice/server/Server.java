@@ -31,6 +31,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 public class Server extends Thread {
 
@@ -363,6 +364,7 @@ public class Server extends Thread {
 
         SoundPacket<?> soundPacket = null;
         String source = null;
+        Predicate<Player> receiverFilter = p -> !p.getUniqueId().equals(sender.getUniqueId());
         if (sender.getGameMode().equals(GameMode.SPECTATOR)) {
             if (Voicechat.SERVER_CONFIG.spectatorPlayerPossession.get()) {
                 Entity camera = sender.getSpectatorTarget();
@@ -380,9 +382,10 @@ public class Server extends Thread {
                     }
                 }
             }
-            if (Voicechat.SERVER_CONFIG.spectatorInteraction.get()) {
-                soundPacket = new LocationSoundPacket(sender.getUniqueId(), sender.getUniqueId(), sender.getLocation(), packet.getData(), packet.getSequenceNumber(), distance, null);
-                source = SoundPacketEvent.SOURCE_SPECTATOR;
+            soundPacket = new LocationSoundPacket(sender.getUniqueId(), sender.getUniqueId(), sender.getLocation(), packet.getData(), packet.getSequenceNumber(), distance, null);
+            source = SoundPacketEvent.SOURCE_SPECTATOR;
+            if (!Voicechat.SERVER_CONFIG.spectatorInteraction.get()) {
+                receiverFilter = receiverFilter.and(p -> p.getGameMode().equals(GameMode.SPECTATOR));
             }
         }
 
@@ -391,7 +394,7 @@ public class Server extends Thread {
             source = SoundPacketEvent.SOURCE_PROXIMITY;
         }
 
-        broadcast(ServerPlayerManager.getPlayersInRange(sender.getWorld(), sender.getLocation(), getBroadcastRange(distance), p -> !p.getUniqueId().equals(sender.getUniqueId())), soundPacket, sender, senderState, groupId, source);
+        broadcast(ServerPlayerManager.getPlayersInRange(sender.getWorld(), sender.getLocation(), getBroadcastRange(distance), receiverFilter), soundPacket, sender, senderState, groupId, source);
     }
 
     public void sendSoundPacket(@Nullable Player sender, @Nullable PlayerState senderState, Player receiver, PlayerState receiverState, @Nullable ClientConnection connection, SoundPacket<?> soundPacket, String source) {
