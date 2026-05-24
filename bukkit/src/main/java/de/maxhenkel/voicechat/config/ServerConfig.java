@@ -19,6 +19,7 @@ public class ServerConfig {
     public final ConfigEntry<String> voiceHost;
     public final ConfigEntry<Boolean> allowRecording;
     public final ConfigEntry<Boolean> spectatorInteraction;
+    public final ConfigEntry<Boolean> spectatorToSpectator;
     public ConfigEntry<Boolean> spectatorPlayerPossession;
     public ConfigEntry<Boolean> forceVoiceChat;
     public ConfigEntry<Integer> loginTimeout;
@@ -89,7 +90,11 @@ public class ServerConfig {
                 );
         spectatorInteraction = builder
                 .booleanEntry("spectator_interaction", true,
-                        "If spectators are allowed to talk to non-spectator players. Spectators can always talk to other spectators in proximity range regardless of this setting."
+                        "If spectators are allowed to talk to non-spectator players in proximity range."
+                );
+        spectatorToSpectator = builder
+                .booleanEntry("spectator_to_spectator", true,
+                        "If spectators are allowed to talk to other spectators in proximity range. Set both this and 'spectator_interaction' to false to put spectators in listen-only mode."
                 );
         spectatorPlayerPossession = builder
                 .booleanEntry("spectator_player_possession", false,

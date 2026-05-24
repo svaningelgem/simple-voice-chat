@@ -434,10 +434,18 @@ public class Server extends Thread {
                     }
                 }
             }
+            boolean talkToNonSpectators = Voicechat.SERVER_CONFIG.spectatorInteraction.get();
+            boolean talkToSpectators = Voicechat.SERVER_CONFIG.spectatorToSpectator.get();
+            if (!talkToNonSpectators && !talkToSpectators) {
+                return;
+            }
             soundPacket = new LocationSoundPacket(sender.getUUID(), sender.getUUID(), sender.getEyePosition(), packet.getData(), packet.getSequenceNumber(), distance, null);
             source = SoundPacketEvent.SOURCE_SPECTATOR;
-            if (!Voicechat.SERVER_CONFIG.spectatorInteraction.get()) {
+            if (!talkToNonSpectators) {
                 receiverFilter = receiverFilter.and(ServerPlayer::isSpectator);
+            }
+            if (!talkToSpectators) {
+                receiverFilter = receiverFilter.and(p -> !p.isSpectator());
             }
         }
 
